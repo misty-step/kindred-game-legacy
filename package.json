@@ -17,7 +17,6 @@
     "format:check": "prettier --check \"{app,convex,tests,scripts,config}/**/*.{ts,tsx,mjs,md,json,css}\" \"*.{ts,json,jsonc,yaml,yml}\"",
     "test:unit": "node --test tests/*.test.ts",
     "test:convex": "vitest run tests/convex/events.test.ts",
-    "test:cloudflare": "vitest run --config vitest.cloudflare.config.ts",
     "test": "pnpm test:unit && pnpm test:convex",
     "check": "pnpm format:check && pnpm build:parlor && pnpm lint && pnpm typecheck && pnpm test && next build"
   },

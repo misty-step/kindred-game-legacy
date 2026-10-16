@@ -23,6 +23,16 @@ the current game code. The frontend's Convex client points at that same-origin
 prefix, and the existing issuer and production guest/continuity keys remain
 unchanged so returning guests keep their identity. The backend starts frozen.
 
+Adapter acceptance uses real workerd and deployed consumer journeys, not the
+optional in-memory testing shim. The prototype alias of the unchanged suite
+exposed early completion in Parlor's `testing.ts:220-225` while a scheduled
+action was still running (an explicit event-loop-drain diagnostic passed).
+That additional prototype check was retired after the real deployed pair,
+crowd, tiebreak, duo and canonical recovery journeys passed. Kindred's existing
+unit and Convex checks remain unchanged; no runtime or game rule was forked to
+make the shim green. Repairing that shared test helper is separate from this
+consumer migration.
+
 The isolated preview uses a separate Worker and Durable Object namespace,
 synthetic records, and preview-only signing/admin credentials. It never holds
 production data or production guest keys. Administrative paths additionally
