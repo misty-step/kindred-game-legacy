@@ -136,7 +136,10 @@ jobs:
         env:
           OPEN_NEXT_DEPLOY: "true"
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          PRODUCTION_RUNTIME_SECRETS: ${{ secrets.KINDRED_PRODUCTION_RUNTIME_SECRETS }}
           GH_TOKEN: ${{ github.token }}
         run: |
+          test -n "$PRODUCTION_RUNTIME_SECRETS"
           test "$(gh api "repos/$GITHUB_REPOSITORY/commits/master" --jq .sha)" = "$GITHUB_SHA"
-          pnpm exec wrangler deploy candidate/worker.js --no-bundle --env="" --var "SENTRY_RELEASE:$GITHUB_SHA"
+          pnpm exec wrangler deploy candidate/worker.js --no-bundle --env=""
+          node -e 'const values=JSON.parse(process.env.PRODUCTION_RUNTIME_SECRETS); values.SENTRY_RELEASE=process.env.GITHUB_SHA; process.stdout.write(JSON.stringify(values))' | pnpm exec wrangler secret bulk --env=""

@@ -25,7 +25,6 @@
     "NEXT_PUBLIC_CONVEX_SITE_URL": "https://kindred-legacy.mistystep.io/backend/http",
     "PARLOR_GUEST_TOKEN_AUDIENCE": "kindred",
     "PARLOR_APP_ORIGIN": "https://kindred-legacy.mistystep.io",
-    "PRODUCT_ENVIRONMENT": "production",
   },
   "durable_objects": {
     "bindings": [{ "name": "KINDRED_BACKEND", "class_name": "KindredBackend" }],
