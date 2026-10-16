@@ -14,6 +14,17 @@ and spoiler-free sharing. Those stories and their existing intent are unchanged.
 Their historical pending-operator-review note remains explicit; this migration
 does not settle new game-design questions.
 
+## Public guest continuity
+
+A player opening the canonical legacy address can acquire a guest identity,
+create or join a room, refresh, and rejoin the same seat. Guest acquisition and
+renewal reject missing or foreign origins, including the separate family-tree
+address. Continuity cookies remain Secure, HttpOnly, host-only and SameSite=Lax.
+
+An origin/configuration repair preserves the existing backend, signing keys,
+player identities and accepted game state. Deployment never takes over the
+family-tree address. Backend migration is a separate change.
+
 ## US-010 Keep the same game through a backend move
 
 A returning player retains their identity, room, seat, answers, retained judge
@@ -43,3 +54,4 @@ credentials never appear in screenshots, telemetry, or public CI artifacts.
 No new features or visual changes are authorized. Any pre-existing discrepancy
 between the nine historical stories and current behavior is recorded separately,
 not silently redesigned as part of this migration.
+

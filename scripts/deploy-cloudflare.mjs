@@ -76,7 +76,7 @@ const env = {
   NEXT_PUBLIC_CONVEX_SITE_URL:
     "https://kindred-legacy.mistystep.io/backend/http",
   PARLOR_GUEST_TOKEN_AUDIENCE: "kindred",
-  PARLOR_APP_ORIGIN: "https://kindred-legacy.mistystep.io",
+  // The runtime origin belongs to the canonical route in wrangler.jsonc.
   // Disables OpenNext esbuild minify; Effect TypeIds are Symbols.
   OPEN_NEXT_DEBUG: "1",
 };

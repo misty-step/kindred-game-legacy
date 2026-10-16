@@ -143,3 +143,4 @@ jobs:
           test "$(gh api "repos/$GITHUB_REPOSITORY/commits/master" --jq .sha)" = "$GITHUB_SHA"
           pnpm exec wrangler deploy candidate/worker.js --no-bundle --env=""
           node -e 'const values=JSON.parse(process.env.PRODUCTION_RUNTIME_SECRETS); values.SENTRY_RELEASE=process.env.GITHUB_SHA; process.stdout.write(JSON.stringify(values))' | pnpm exec wrangler secret bulk --env=""
+
