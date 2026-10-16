@@ -19,6 +19,7 @@
     "app/**/*.ts",
     "app/**/*.tsx",
     "convex/**/*.ts",
+    "cloudflare/**/*.ts",
     "tests/**/*.ts",
     "next.config.ts",
     ".next/types/**/*.ts",

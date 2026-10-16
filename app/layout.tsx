@@ -7,7 +7,7 @@ import "./globals.css";
 import { Providers } from "./providers";
 
 const origin =
-  process.env["NEXT_PUBLIC_APP_URL"] ?? "https://kindred.mistystep.io";
+  process.env["NEXT_PUBLIC_APP_URL"] ?? "https://kindred-legacy.mistystep.io";
 
 export const metadata: Metadata = {
   metadataBase: new URL(origin),
