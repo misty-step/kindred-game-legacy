@@ -7,7 +7,11 @@ import { Mark } from "./mark";
 
 export function Providers({ children }: { children: ReactNode }) {
   const [client] = useState(() => {
-    const url = process.env["NEXT_PUBLIC_CONVEX_URL"];
+    const url =
+      process.env["NEXT_PUBLIC_KINDRED_CLOUDFLARE_BACKEND"] === "true" &&
+      typeof window !== "undefined"
+        ? new URL("/backend", window.location.origin).toString()
+        : process.env["NEXT_PUBLIC_CONVEX_URL"];
     return url ? new ConvexReactClient(url) : null;
   });
   if (!client) {

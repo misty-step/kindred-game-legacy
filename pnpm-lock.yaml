@@ -16,6 +16,9 @@ importers:
       "@parlor/auth":
         specifier: workspace:*
         version: link:vendor/parlor/packages/auth
+      "@parlor/cloudflare":
+        specifier: workspace:*
+        version: link:vendor/parlor-cloudflare/integrations/cloudflare
       "@parlor/convex":
         specifier: workspace:*
         version: link:vendor/parlor/integrations/convex
@@ -83,6 +86,19 @@ importers:
       wrangler:
         specifier: 4.129.0
         version: 4.129.0
+
+  vendor/parlor-cloudflare/integrations/cloudflare:
+    dependencies:
+      convex:
+        specifier: ^1.42.3
+        version: 1.45.0(react@19.2.8)
+      fflate:
+        specifier: 0.8.3
+        version: 0.8.3
+    devDependencies:
+      vitest:
+        specifier: 5.0.0
+        version: 5.0.0(@edge-runtime/vm@5.0.0)(@opentelemetry/api@1.9.1)(@types/node@26.0.0)(happy-dom@20.10.6)(vite@8.2.2(@types/node@26.0.0)(esbuild@0.28.1)(terser@5.51.2)(yaml@2.9.1))
 
   vendor/parlor/integrations/convex:
     dependencies:
@@ -4525,6 +4541,12 @@ packages:
       picomatch:
         optional: true
 
+  fflate@0.8.3:
+    resolution:
+      {
+        integrity: sha512-tbZNuJrLwGUp3zshBtdy4W+ORxZuIh8a5ilyIEQDC5rY1f3U20JMry0Ll3WBzU58EZKsEuJFXhb5gwv8CsPvgA==,
+      }
+
   finalhandler@2.1.1:
     resolution:
       {
@@ -8887,6 +8909,8 @@ snapshots:
   fdir@6.5.0(picomatch@4.0.7):
     optionalDependencies:
       picomatch: 4.0.7
+
+  fflate@0.8.3: {}
 
   finalhandler@2.1.1(supports-color@10.2.2):
     dependencies:

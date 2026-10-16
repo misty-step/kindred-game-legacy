@@ -71,10 +71,12 @@ async function disableOpenNextDebug(directory) {
 
 const env = {
   ...process.env,
-  NEXT_PUBLIC_CONVEX_URL: "https://clear-dalmatian-864.convex.cloud",
-  NEXT_PUBLIC_CONVEX_SITE_URL: "https://clear-dalmatian-864.convex.site",
+  NEXT_PUBLIC_KINDRED_CLOUDFLARE_BACKEND: "true",
+  NEXT_PUBLIC_CONVEX_URL: "https://kindred-legacy.mistystep.io/backend",
+  NEXT_PUBLIC_CONVEX_SITE_URL:
+    "https://kindred-legacy.mistystep.io/backend/http",
   PARLOR_GUEST_TOKEN_AUDIENCE: "kindred",
-  PARLOR_APP_ORIGIN: "https://kindred.mistystep.io",
+  PARLOR_APP_ORIGIN: "https://kindred-legacy.mistystep.io",
   // Disables OpenNext esbuild minify; Effect TypeIds are Symbols.
   OPEN_NEXT_DEBUG: "1",
 };

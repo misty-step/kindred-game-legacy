@@ -3,16 +3,23 @@ name: CI
 on:
   push:
   pull_request:
+  workflow_dispatch:
+    inputs:
+      artifact_run_id:
+        description: Successful same-head CI run whose tested artifact is promoted
+        required: true
+        type: string
 
 permissions:
   contents: read
 
 concurrency:
   group: ci-${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   check:
+    if: github.event_name != 'workflow_dispatch'
     runs-on: ubuntu-latest
     timeout-minutes: 20
     env:
@@ -27,7 +34,7 @@ jobs:
           submodules: recursive
       - uses: actions/setup-node@v4
         with:
-          node-version: "24"
+          node-version: "24.20.0"
       - uses: pnpm/action-setup@v4
         with:
           version: 11.25.0
@@ -36,3 +43,93 @@ jobs:
         run: pnpm install --frozen-lockfile
       - name: Run canonical checks
         run: pnpm check
+      - name: Build the immutable Cloudflare candidate
+        env:
+          PRODUCT_ENVIRONMENT: production
+          SENTRY_RELEASE: ${{ github.sha }}
+        run: |
+          node scripts/deploy-cloudflare.mjs --build-only
+          pnpm exec wrangler deploy --env="" --dry-run --outdir candidate
+          printf '%s\n' "$GITHUB_SHA" > candidate/source.txt
+          python3 -c 'import hashlib,pathlib; files=[pathlib.Path("candidate/worker.js"),*sorted(p for p in pathlib.Path(".open-next/assets").rglob("*") if p.is_file())]; pathlib.Path("candidate/SHA256SUMS").write_text("".join(hashlib.sha256(p.read_bytes()).hexdigest()+"  "+str(p)+"\n" for p in files))'
+      - uses: actions/upload-artifact@v4
+        with:
+          name: kindred-worker
+          include-hidden-files: true
+          retention-days: 30
+          path: |
+            candidate/
+            .open-next/assets/
+
+  preview:
+    needs: check
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    concurrency:
+      group: kindred-preview
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24.20.0"
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11.25.0
+          run_install: false
+      - run: pnpm install --frozen-lockfile
+      - uses: actions/download-artifact@v4
+        with:
+          name: kindred-worker
+      - name: Deploy only the isolated preview
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          PREVIEW_RUNTIME_SECRETS: ${{ secrets.KINDRED_PREVIEW_RUNTIME_SECRETS }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          test "$(gh api "repos/$GITHUB_REPOSITORY/commits/$GITHUB_REF_NAME" --jq .sha)" = "$GITHUB_SHA"
+          test "$(cat candidate/source.txt)" = "$GITHUB_SHA"
+          sha256sum -c candidate/SHA256SUMS
+          pnpm exec wrangler deploy candidate/worker.js --no-bundle --env preview --var "SENTRY_RELEASE:$GITHUB_SHA"
+          printf '%s' "$PREVIEW_RUNTIME_SECRETS" | pnpm exec wrangler secret bulk --env preview
+
+  production:
+    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/master'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: read
+    concurrency:
+      group: kindred-production
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24.20.0"
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11.25.0
+          run_install: false
+      - run: pnpm install --frozen-lockfile
+      - name: Select the successful exact-head candidate, never rebuild it
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ARTIFACT_RUN: ${{ inputs.artifact_run_id }}
+        run: |
+          gh api "repos/$GITHUB_REPOSITORY/actions/runs/$ARTIFACT_RUN" > run.json
+          python3 -c 'import json,os; d=json.load(open("run.json")); assert d["conclusion"]=="success" and d["name"]=="CI" and d["head_sha"]==os.environ["GITHUB_SHA"] and d["event"]=="push"'
+          gh run download "$ARTIFACT_RUN" -R "$GITHUB_REPOSITORY" -n kindred-worker
+          test "$(cat candidate/source.txt)" = "$GITHUB_SHA"
+          sha256sum -c candidate/SHA256SUMS
+      - name: Promote the verified artifact through the normal scoped CI path
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          test "$(gh api "repos/$GITHUB_REPOSITORY/commits/master" --jq .sha)" = "$GITHUB_SHA"
+          pnpm exec wrangler deploy candidate/worker.js --no-bundle --env="" --var "SENTRY_RELEASE:$GITHUB_SHA"

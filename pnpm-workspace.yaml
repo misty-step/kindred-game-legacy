@@ -1,6 +1,7 @@
 packages:
   - vendor/parlor/packages/*
   - vendor/parlor/integrations/*
+  - vendor/parlor-cloudflare/integrations/cloudflare
 
 # pnpm 11 build approvals (Poppycock convention; pnpm 11.25 scaffolds
 # this key itself on ignored builds).

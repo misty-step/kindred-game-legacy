@@ -2,10 +2,11 @@
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "kindred",
   "account_id": "b069014f6a46558ea9146fb6c4ff8f6c",
-  "main": ".open-next/worker.js",
+  "main": "cloudflare/worker.ts",
+  "alias": { "open-next-worker": "./.open-next/worker.js" },
   "compatibility_date": "2026-09-06",
   "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
-  "workers_dev": true,
+  "workers_dev": false,
   "preview_urls": false,
   "send_metrics": false,
   "observability": { "enabled": true },
@@ -15,14 +16,50 @@
   },
   "routes": [
     {
-      "pattern": "kindred.mistystep.io",
+      "pattern": "kindred-legacy.mistystep.io",
       "custom_domain": true,
     },
   ],
   "vars": {
-    "NEXT_PUBLIC_CONVEX_URL": "https://clear-dalmatian-864.convex.cloud",
-    "NEXT_PUBLIC_CONVEX_SITE_URL": "https://clear-dalmatian-864.convex.site",
+    "NEXT_PUBLIC_CONVEX_URL": "https://kindred-legacy.mistystep.io/backend",
+    "NEXT_PUBLIC_CONVEX_SITE_URL": "https://kindred-legacy.mistystep.io/backend/http",
     "PARLOR_GUEST_TOKEN_AUDIENCE": "kindred",
-    "PARLOR_APP_ORIGIN": "https://kindred.mistystep.io",
+    "PARLOR_APP_ORIGIN": "https://kindred-legacy.mistystep.io",
+    "PRODUCT_ENVIRONMENT": "production",
+  },
+  "durable_objects": {
+    "bindings": [{ "name": "KINDRED_BACKEND", "class_name": "KindredBackend" }],
+  },
+  "migrations": [
+    { "tag": "kindred-backend-v1", "new_sqlite_classes": ["KindredBackend"] },
+  ],
+  "env": {
+    "preview": {
+      "name": "kindred-migration-preview",
+      "workers_dev": false,
+      "preview_urls": false,
+      "routes": [
+        {
+          "pattern": "kindred-migration-preview.mistystep.io",
+          "custom_domain": true,
+        },
+      ],
+      "durable_objects": {
+        "bindings": [
+          { "name": "KINDRED_BACKEND", "class_name": "KindredBackend" },
+        ],
+      },
+      "vars": {
+        "NEXT_PUBLIC_CONVEX_URL": "https://kindred-migration-preview.mistystep.io/backend",
+        "NEXT_PUBLIC_CONVEX_SITE_URL": "https://kindred-migration-preview.mistystep.io/backend/http",
+        "PARLOR_GUEST_TOKEN_AUDIENCE": "kindred",
+        "PARLOR_APP_ORIGIN": "https://kindred-migration-preview.mistystep.io",
+        "PRODUCT_ENVIRONMENT": "test",
+        "KINDRED_SYNTHETIC_PREVIEW": "true",
+        "JEV_DECISIONS_URL": "https://kindred-migration-preview.mistystep.io/__qa/judge",
+        "JEV_MODEL": "synthetic-distinct-only",
+        "OPENROUTER_API_KEY": "synthetic-preview-not-real",
+      },
+    },
   },
 }
