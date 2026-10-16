@@ -43,7 +43,9 @@ key behind it. Public player paths do not acquire Access.
 
 Kaylee authorized a migration-only unarchive, CI deployment, verified live game
 and data, then rearchive. Record both archive state changes in the retained
-handoff. Retirement is explicitly not selected.
+handoff. Game retirement is explicitly not selected. After live cutover, Kaylee
+owns the requested seven-day soak and old-Convex retirement follow-up; until
+then the old backend remains paused and recoverable.
 
 Before importing any production snapshot: encrypt it with age to an identity
 kept only in mirrodin pass, retain it in private R2, verify readback hashes, and

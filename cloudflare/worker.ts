@@ -77,6 +77,8 @@ export default {
       const body = (await request.json()) as {
         questions?: Record<string, unknown>;
       };
+      if (env["KINDRED_SYNTHETIC_JUDGE_UNAVAILABLE"] === "true")
+        return Response.json({ status: "unavailable" }, { status: 503 });
       return Response.json({
         answers: Object.fromEntries(
           Object.keys(body.questions ?? {}).map((name) => [

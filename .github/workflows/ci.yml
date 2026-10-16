@@ -96,7 +96,7 @@ jobs:
           sha256sum -c candidate/SHA256SUMS
           args=(deploy candidate/worker.js --no-bundle --env preview --var "SENTRY_RELEASE:$GITHUB_SHA")
           if [ "$PREVIEW_JUDGE_UNAVAILABLE" = true ]; then
-            args+=(--var JEV_DECISIONS_URL:https://kindred-migration-preview.mistystep.io/__qa/unavailable)
+            args+=(--var KINDRED_SYNTHETIC_JUDGE_UNAVAILABLE:true)
           fi
           pnpm exec wrangler "${args[@]}"
           printf '%s' "$PREVIEW_RUNTIME_SECRETS" | pnpm exec wrangler secret bulk --env preview
