@@ -88,12 +88,17 @@ jobs:
           OPEN_NEXT_DEPLOY: "true"
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           PREVIEW_RUNTIME_SECRETS: ${{ secrets.KINDRED_PREVIEW_RUNTIME_SECRETS }}
+          PREVIEW_JUDGE_UNAVAILABLE: ${{ vars.KINDRED_PREVIEW_JUDGE_UNAVAILABLE }}
           GH_TOKEN: ${{ github.token }}
         run: |
           test "$(gh api "repos/$GITHUB_REPOSITORY/commits/$GITHUB_REF_NAME" --jq .sha)" = "$GITHUB_SHA"
           test "$(cat candidate/source.txt)" = "$GITHUB_SHA"
           sha256sum -c candidate/SHA256SUMS
-          pnpm exec wrangler deploy candidate/worker.js --no-bundle --env preview --var "SENTRY_RELEASE:$GITHUB_SHA"
+          args=(deploy candidate/worker.js --no-bundle --env preview --var "SENTRY_RELEASE:$GITHUB_SHA")
+          if [ "$PREVIEW_JUDGE_UNAVAILABLE" = true ]; then
+            args+=(--var JEV_DECISIONS_URL:https://kindred-migration-preview.mistystep.io/__qa/unavailable)
+          fi
+          pnpm exec wrangler "${args[@]}"
           printf '%s' "$PREVIEW_RUNTIME_SECRETS" | pnpm exec wrangler secret bulk --env preview
 
   production:
