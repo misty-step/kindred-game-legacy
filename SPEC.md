@@ -54,4 +54,3 @@ credentials never appear in screenshots, telemetry, or public CI artifacts.
 No new features or visual changes are authorized. Any pre-existing discrepancy
 between the nine historical stories and current behavior is recorded separately,
 not silently redesigned as part of this migration.
-
