@@ -74,7 +74,7 @@ const env = {
   NEXT_PUBLIC_CONVEX_URL: "https://clear-dalmatian-864.convex.cloud",
   NEXT_PUBLIC_CONVEX_SITE_URL: "https://clear-dalmatian-864.convex.site",
   PARLOR_GUEST_TOKEN_AUDIENCE: "kindred",
-  PARLOR_APP_ORIGIN: "https://kindred.mistystep.io",
+  // The runtime origin belongs to the canonical route in wrangler.jsonc.
   // Disables OpenNext esbuild minify; Effect TypeIds are Symbols.
   OPEN_NEXT_DEBUG: "1",
 };
