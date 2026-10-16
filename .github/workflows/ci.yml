@@ -85,6 +85,7 @@ jobs:
           name: kindred-worker
       - name: Deploy only the isolated preview
         env:
+          OPEN_NEXT_DEPLOY: "true"
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           PREVIEW_RUNTIME_SECRETS: ${{ secrets.KINDRED_PREVIEW_RUNTIME_SECRETS }}
           GH_TOKEN: ${{ github.token }}
@@ -128,6 +129,7 @@ jobs:
           sha256sum -c candidate/SHA256SUMS
       - name: Promote the verified artifact through the normal scoped CI path
         env:
+          OPEN_NEXT_DEPLOY: "true"
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           GH_TOKEN: ${{ github.token }}
         run: |
